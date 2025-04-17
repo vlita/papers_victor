@@ -1,0 +1,121 @@
+%merlin.mbs aipnum4-1.bst 2010-07-25 4.21a (PWD, AO, DPC) hacked
+%Control: key (0)
+%Control: author (8) initials jnrlst
+%Control: editor formatted (1) identically to author
+%Control: production of article title (-1) disabled
+%Control: page (0) single
+%Control: year (1) truncated
+%Control: production of eprint (0) enabled
+\begin{thebibliography}{6}%
+\makeatletter
+\providecommand \@ifxundefined [1]{%
+ \@ifx{#1\undefined}
+}%
+\providecommand \@ifnum [1]{%
+ \ifnum #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \@ifx [1]{%
+ \ifx #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \natexlab [1]{#1}%
+\providecommand \enquote  [1]{``#1''}%
+\providecommand \bibnamefont  [1]{#1}%
+\providecommand \bibfnamefont [1]{#1}%
+\providecommand \citenamefont [1]{#1}%
+\providecommand \href@noop [0]{\@secondoftwo}%
+\providecommand \href [0]{\begingroup \@sanitize@url \@href}%
+\providecommand \@href[1]{\@@startlink{#1}\@@href}%
+\providecommand \@@href[1]{\endgroup#1\@@endlink}%
+\providecommand \@sanitize@url [0]{\catcode `\\12\catcode `\$12\catcode
+  `\&12\catcode `\#12\catcode `\^12\catcode `\_12\catcode `\%12\relax}%
+\providecommand \@@startlink[1]{}%
+\providecommand \@@endlink[0]{}%
+\providecommand \url  [0]{\begingroup\@sanitize@url \@url }%
+\providecommand \@url [1]{\endgroup\@href {#1}{\urlprefix }}%
+\providecommand \urlprefix  [0]{URL }%
+\providecommand \Eprint [0]{\href }%
+\providecommand \doibase [0]{http://dx.doi.org/}%
+\providecommand \selectlanguage [0]{\@gobble}%
+\providecommand \bibinfo  [0]{\@secondoftwo}%
+\providecommand \bibfield  [0]{\@secondoftwo}%
+\providecommand \translation [1]{[#1]}%
+\providecommand \BibitemOpen [0]{}%
+\providecommand \bibitemStop [0]{}%
+\providecommand \bibitemNoStop [0]{.\EOS\space}%
+\providecommand \EOS [0]{\spacefactor3000\relax}%
+\providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
+\let\auto@bib@innerbib\@empty
+%</preamble>
+\bibitem [{\citenamefont {Schriber}\ and\ \citenamefont
+  {Evangelista}(2016)}]{Schriber2016Adaptive}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.~B.}\ \bibnamefont
+  {Schriber}}\ and\ \bibinfo {author} {\bibfnamefont {F.~A.}\ \bibnamefont
+  {Evangelista}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {J. Chem. Phys.}\ }\textbf {\bibinfo {volume} {144}},\ \bibinfo {pages}
+  {161106} (\bibinfo {year} {2016})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Motta}\ \emph {et~al.}(2019)\citenamefont {Motta},
+  \citenamefont {Sun}, \citenamefont {Tan}, \citenamefont {O'Rourke},
+  \citenamefont {Ye}, \citenamefont {Minnich}, \citenamefont {Brand{\~a}o},\
+  and\ \citenamefont {Chan}}]{motta2019determining}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Motta}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Sun}}, \bibinfo
+  {author} {\bibfnamefont {A.~T.}\ \bibnamefont {Tan}}, \bibinfo {author}
+  {\bibfnamefont {M.~J.}\ \bibnamefont {O'Rourke}}, \bibinfo {author}
+  {\bibfnamefont {E.}~\bibnamefont {Ye}}, \bibinfo {author} {\bibfnamefont
+  {A.~J.}\ \bibnamefont {Minnich}}, \bibinfo {author} {\bibfnamefont {F.~G.}\
+  \bibnamefont {Brand{\~a}o}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {G.~K.-L.}\ \bibnamefont {Chan}},\ }\href@noop {} {\bibfield  {journal}
+  {\bibinfo  {journal} {Nat. Phys.}\ }\textbf {\bibinfo {volume} {16}},\
+  \bibinfo {pages} {1} (\bibinfo {year} {2019})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Tsuchimochi}\ \emph {et~al.}(2023)\citenamefont
+  {Tsuchimochi}, \citenamefont {Ryo}, \citenamefont {Ten-No},\ and\
+  \citenamefont {Sasasako}}]{tsuchimochi2023improved}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {T.}~\bibnamefont
+  {Tsuchimochi}}, \bibinfo {author} {\bibfnamefont {Y.}~\bibnamefont {Ryo}},
+  \bibinfo {author} {\bibfnamefont {S.~L.}\ \bibnamefont {Ten-No}}, \ and\
+  \bibinfo {author} {\bibfnamefont {K.}~\bibnamefont {Sasasako}},\ }\href@noop
+  {} {\bibfield  {journal} {\bibinfo  {journal} {Journal of Chemical Theory and
+  Computation}\ }\textbf {\bibinfo {volume} {19}},\ \bibinfo {pages} {503}
+  (\bibinfo {year} {2023})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Stokes}\ \emph {et~al.}(2020)\citenamefont {Stokes},
+  \citenamefont {Izaac}, \citenamefont {Killoran},\ and\ \citenamefont
+  {Carleo}}]{stokes2020quantum}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
+  {Stokes}}, \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Izaac}},
+  \bibinfo {author} {\bibfnamefont {N.}~\bibnamefont {Killoran}}, \ and\
+  \bibinfo {author} {\bibfnamefont {G.}~\bibnamefont {Carleo}},\ }\href@noop {}
+  {\bibfield  {journal} {\bibinfo  {journal} {Quantum}\ }\textbf {\bibinfo
+  {volume} {4}},\ \bibinfo {pages} {269} (\bibinfo {year} {2020})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Gacon}\ \emph {et~al.}(2021)\citenamefont {Gacon},
+  \citenamefont {Zoufal}, \citenamefont {Carleo},\ and\ \citenamefont
+  {Woerner}}]{gacon2021simultaneous}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
+  {Gacon}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Zoufal}},
+  \bibinfo {author} {\bibfnamefont {G.}~\bibnamefont {Carleo}}, \ and\ \bibinfo
+  {author} {\bibfnamefont {S.}~\bibnamefont {Woerner}},\ }\href@noop {}
+  {\bibfield  {journal} {\bibinfo  {journal} {Quantum}\ }\textbf {\bibinfo
+  {volume} {5}},\ \bibinfo {pages} {567} (\bibinfo {year} {2021})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {McArdle}\ \emph {et~al.}(2020)\citenamefont
+  {McArdle}, \citenamefont {Endo}, \citenamefont {Aspuru-Guzik}, \citenamefont
+  {Benjamin},\ and\ \citenamefont {Yuan}}]{mcardle2020quantum}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {McArdle}}, \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {Endo}},
+  \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Aspuru-Guzik}}, \bibinfo
+  {author} {\bibfnamefont {S.~C.}\ \bibnamefont {Benjamin}}, \ and\ \bibinfo
+  {author} {\bibfnamefont {X.}~\bibnamefont {Yuan}},\ }\href@noop {} {\bibfield
+   {journal} {\bibinfo  {journal} {Rev. Mod. Phys.}\ }\textbf {\bibinfo
+  {volume} {92}},\ \bibinfo {pages} {015003} (\bibinfo {year}
+  {2020})}\BibitemShut {NoStop}%
+\end{thebibliography}%
