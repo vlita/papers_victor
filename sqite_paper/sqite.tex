@@ -590,10 +590,47 @@ In summary, the resource requirements of QITE scale with (i) the total number of
 %\subsection{QITE with Low Rank Hamiltonians}
 %Another way to exploit sparsity in the evolution is by considering low rank factorization of...
 
-\section{Computational Considerations}
+\section{Computational Details}
+The ground-state singlet energies and molecular integrals of the H10 model systems were calculated using FCI with self consistent field (SCF) orbitals obtained with the open-source quantum chemistry package Psi4 \cite{Parrish2017Psi4, smith2020psi4} in a STO-6G basis set. For the two ene systems (8-ene, 12-ene), The ground-state singlet energies and molecular integrals were calculated using FCI within an active space based on the Carbon atom 2pz orbitals with complete active space self-consistent field (CASSCF) from a cc-pvdz basis set using the open-source quantum chemistry package PySCF \cite{sun2018pyscf}. All ground state computations were performed in C1 symmetry. The ranges of threshold parameters used for sQITE are given in the Supplementary Material.
+
+write about how double factorization employs d2H symmetry here
+% Canonical (delocalized) orbitals were computed usingrestricted Hartree–Fock (RHF). Localized orbitals were obtained by first performing a restricted open-shell Hartree-Fock (ROHF) computation using maximum multiplicity (e.g., S = 5for H10) and then localizing the orbitals with the Pipek–Mezey(PM)133 procedure (allowing rotations among all orbitals).
+
+% Computations based on canonical RHF orbitals were run in D2h symmetry for the H10 chain, ring, and sheet and in C2v symmetry for the H10 pyramid. The H12, H14, and H16 analogs of the four systems were run with the same symmetry as their H10 counterparts with the exception of the H14 pyramid, which used D2h symmetry. All computations using localized orbitals were performed in C1 symmetry. The ranges of threshold parameters used for each method are given in the Supplementary Material.
+
+sQITE, DF-sQITE, SPQE and UCC-VQE computations were performed in a development version of the open-source quantum simulation and chemistry library QForte \cite{stair2021qforte}. 
+
+% All ACI computations included additional determinants to ensure spin completeness of the P and Q spaces. The rank-reduction procedure used for SVD-FCI and the a posteriori determinant screening procedure for ap-sCI were implemented in a development version of Forte. 
+
+% Density matrix renormalization group calculations were performed with CheMPS2.145 DMRG calculations associated with a particular final value of M were preceded by three preliminary computations with smaller bond dimension and added noise. This procedure has been shown to make the overall DMRG calculation converge more rapidly and produce more accurate results.78,146 In the first two preliminary computations M is set to 150, 500, 500, and 500 (for H10, H12,H14, and H16 respectively) to build an initialization for the last two instructions with a larger value of M. In cases where the final value of M is less than the values specified above, the same value of M is used for the three preliminary calculations and for the final calculation. As mentioned already, due to the block structure of the DMRG tensors induced by symmetries, the final MPS in general does not correspond to a set of dense matrices of dimension M2. For DMRG calculations using a localized basis, orbitals for the 1D chain and ring were ordered to be spatially consecutive. Localized orbitals for the 2D sheet and 3D pyramid systems used a Fiedler vector ordering derived from the two electron integrals to account fo physical proximity and orbital overlap.82 Plots of the localized orbitals and the site orderings are reported in the Supplementary Material. For canonical MOs, orbitals were grouped into blocks by irreducible representation and (within each irreducible representation) ordered energetically. For calculations using D2h symmetry, the irreducible representation blocks were ordered as Ag, B1u, B3u, B2g, B2u, B3g, B1g, Au such that blocks corresponding to bonding and anti-bonding orbitals were adjacent on the DMRG lattice. This strategy has been shown to be successful for several DMRG studies81,147–149 and is rationalized by quantum information principles.119 For calculations using symmetries other than D2h, the ordering of the irreducible representations followed Cotton’s ordering.
 
 \section{Results}
+To evaluate the efficiency of the selected Quantum Imaginary Time Evolution (sQITE) approach relative to standard quantum algorithms, we performed numerical simulations on several molecular systems of increasing complexity, specifically three hydrogen systems (H$_{10}$ chain, ring, and sheet geometries) at bond lengths of 1.0 Å and 1.5 Å, as well as larger conjugated organic systems, 8-ene and 12-ene.
 
+We first analyzed the number of Pauli measurements required to achieve chemical accuracy, defined as an energy error of less than 1.6 mHartree, for different operator inclusion thresholds. Plot 1 displays the results for the hydrogen systems at the 1.0 Å bond length, clearly indicating that certain operator thresholds allow sQITE to achieve chemical accuracy with significantly fewer Pauli measurements compared to the fixed singles and doubles pool approach {plot1}. This result highlights the advantages of a dynamically selected operator pool.
+
+In addition, we assessed the complexity of quantum circuits by counting CNOT gates required for chemical accuracy, presented in plot 2. Consistent with our findings for Pauli measurements, the sQITE algorithm outperforms the fixed singles and doubles pool in terms of gate complexity at certain thresholds, demonstrating the method's capability to reduce quantum resource requirements substantially {plot2}.
+
+For the same hydrogen systems at an extended bond length of 1.5 Å, plots 3 and 4 demonstrate a similar trend in the efficiency of the sQITE algorithm. Both the Pauli measurements and CNOT gates required to reach chemical accuracy were significantly lower for selected operator pools compared to fixed operator approaches, reflecting sQITE's consistent performance across different molecular geometries and bond distances {plot3}{plot4}.
+
+We extended our analysis to larger molecular systems, specifically the conjugated hydrocarbons 8-ene and 12-ene. Plot 5 demonstrates that sQITE again substantially reduces the number of Pauli measurements and CNOT gates necessary to reach chemical accuracy compared to fixed pools, confirming its scalability to larger systems {plot5}.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.45\textwidth]{sqite_paper/ene_plot_SD_v_selected.png}
+\\
+\includegraphics[width=0.45\textwidth]{sqite_paper/ene_plot_cnot.jpg}
+\caption{dUCCSD energy convergence for 8-ene chains in a cc-pVDZ basis using AVAS among 2pz orbitals of carbon. We show the absolute value of the energy change between subsequent iterations for QITE in a singles and doubles UCC Ansatz, and selected QITE with 5 different cumulative thresholds ($1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}$, $5.0 \times 10^{-9}\ E_h$) for relative operator magnitudes. Both plots compare convergence with respect to the number of Pauli measurements ($N_\mathrm{meas}$) and number of CNOT gates ($N_\mathrm{CNOT}$).}
+\label{fig:ene_plot}
+\end{figure}
+
+Double Factorization and Measurement Overhead
+
+In this study, we utilized double-factorized Hamiltonians to further reduce measurement overhead associated with the non-unitary imaginary time evolution operator. As illustrated in plot 6, a direct comparison between UCCSD VQE, SPQE, regular sQITE, and double-factorized sQITE was conducted on the 8-ene system. Double factorized sQITE consistently provided the most cost-efficient solution among the compared methods, achieving chemical accuracy with fewer quantum resources {plot6}.
+
+A comprehensive analysis comparing regular sQITE and double-factorized sQITE across various operator inclusion thresholds is summarized in plot 7. This plot clearly indicates that double factorization significantly reduces resource requirements, achieving cost efficiency with only negligible accuracy losses compared to regular sQITE {plot7}. This enhancement underscores the utility of double factorization for larger and strongly correlated molecular systems.
+
+In summary, these results demonstrate the robustness, efficiency, and accuracy of the selected QITE approach in conjunction with double-factorized Hamiltonians. The significant reductions in required Pauli measurements and CNOT gates across diverse molecular systems and bond geometries indicate that selected QITE represents a viable and powerful quantum algorithm, potentially outperforming fixed pool methods in resource-limited quantum computing environments.
 \section{Conclusions}
 
 \bibliography{bibliography,extra}
