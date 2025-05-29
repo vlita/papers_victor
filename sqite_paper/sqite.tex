@@ -86,6 +86,20 @@
   {\arabic{subsubsection}.}{0.5 em}{}
 \titlespacing{\subsubsection}{0pt}{8pt}{8pt}
 
+\usepackage{xcolor}
+\usepackage{ifthen}
+
+% Toggle
+\newboolean{shownotes}
+\setboolean{shownotes}{true} % Change to false to hide notes
+
+% Define a command for color-coded notes
+\newcommand{\note}[2]{%
+  \ifthenelse{\boolean{shownotes}}%
+    {\textcolor{#1}{#2}}%
+    {}%
+}
+
 \begin{document}
 
 \title{Exploting Sparsity in Quantum Imaginary Time Evolution}
@@ -106,10 +120,10 @@ This work explores methods for exploiting sparsity in the quantum imaginary time
 \section{\label{sec:intro}Introduction}
 
 
-In modern quantum chemistry, solving the Schrödinger equation efficiently for molecules with strongly correlated electrons remains an important open challenge \cite{9,10}. 
+In modern quantum chemistry, solving the Schrödinger equation efficiently for molecules with strongly correlated electrons remains an important open challenge \cite{Laughlin2000TheTheory}. 
 Here, “strong correlation” refers to scenarios where the energy required to promote electrons to higher orbitals rivals the Coulomb repulsion between them, resulting in electronic states that must be described by an extensive mixture of Slater determinants \cite{9,10}. 
 This complexity is central to phenomena such as bond dissociation and photochemical reactions \cite{1,2}, as well as to the behavior of systems exhibiting molecular magnetism \cite{3} and high-temperature superconductivity \cite{4}. 
-Conventional single-reference Configuration Interaction (CI) or Coupled Cluster (CC) methods, which generally build excitations out of the Hartree--Fock (HF) determinant, often fail to capture these effects with sufficient accuracy.
+Conventional single-reference Configuration Interaction (CI) or Coupled Cluster (CC) methods, which generally build excitations out of the Hartree--Fock (HF) determinant, often fail to capture these effects with sufficient accuracy \cite{4}.
 Additionally, if trying to capture excited state properties, popular classical approaches like time-dependent density functional theory (TD-DFT) \cite{4,5} and equation-of-motion coupled cluster (EOM-CC) \cite{6,7} often falter in the presence of near-degenerate states, such as those occurring at avoided crossings and conical intersections \cite{1,2,3,8,9,10}. 
 Although methods which can accurately treat strong correlation do exist—namely, the complete active space (CAS) family, density matrix renormalization group (DMRG),  and selected configuration interaction (CI)— their  memory requirements, especially when approaching full configuration interaction (FCI) limit, scale prohibitivly with active space size, rendering them impractical except under very specific conditions \cite{11,12-18,19-28,29-35,36-44,46-56,57-60,61,62}.
 
@@ -163,11 +177,11 @@ Introducing a selection protocol at each time step is therefore a very sensible 
 
 Here, we present an improved QITE algorithm that \textit{iteratively selects} the most significant excitation and de-excitation operators at each time step. 
 Our approach identifies important contributions to the anti-Hermitian generator in an efficient manner, requiring significantly fewer quantum resources than those demanded by the conventional full update of $\mathbf{x}$ at every iteration. 
-\textcolor{red}{Improve the above, discuss general idea of selectoin based on satisfaction of the residual condition (similar to PQE)}
+\note{red}{Improve the above, discuss general idea of selectoin based on satisfaction of the residual condition (similar to PQE)}
 Notably, by adaptively growing (or shrinking) the operator pool, the method balances the requirement to capture high-order effects in the early imaginary time regime and the opportunity to eliminate negligible operators once the system is close to an eigenstate. 
 This dynamical selection of operators is especially pertinent for challenging excited states where multireference effects come into play and for near-degenerate situations in which physically relevant interactions of higher order can become indispensable. 
 Thus, the proposed selection strategy adds a powerful layer of flexibility to QITE, paving the way for more accurate and resource-efficient computations of ground and excited states on near-term and early fault-tolerant quantum hardware.
-
+\note{red}{
 \paragraph{Significance of Our Results (Template).}
 \begin{itemize}
     \item \textbf{Overview of Key Contributions:} Summarize the main algorithmic or theoretical developments introduced in this work, highlighting how they address current limitations in QITE for strongly correlated systems.
@@ -175,7 +189,11 @@ Thus, the proposed selection strategy adds a powerful layer of flexibility to QI
     \item \textbf{Applications and Broader Impact:} Discuss the relevance of these results to realistic molecular or materials systems, including potential extensions to larger, more complex problems.
     \item \textbf{Future Directions:} Suggest how the proposed strategies might be generalized or combined with other quantum algorithms, as well as possible avenues for error mitigation or fault-tolerance.
 \end{itemize}
+}
 
+In this work, we demonstrate that the selected Quantum Imaginary Time Evolution (sQITE) algorithm provides a substantial improvement in resource efficiency for quantum simulations of electronic structure. The central question addressed is whether a dynamically chosen operator pool, guided by a magnitude-based threshold, can outperform traditional fixed-pool ansätze in practical quantum computing contexts. This is important because the high cost of quantum resources—particularly Pauli measurements and entangling gate operations—poses a major bottleneck to the scalability of quantum algorithms such as Variational Quantum Eigensolvers (VQE). Our approach is novel in that it integrates operator selection into the imaginary time evolution process, enabling convergence toward chemically accurate ground states with minimal resource expenditure.
+
+We find that sQITE significantly reduces both the number of Pauli measurements and CNOT gates required to reach chemical accuracy across a range of molecular systems, from small hydrogen clusters (chains, rings, and sheets) to larger conjugated hydrocarbons (8-ene and 12-ene). These reductions are achieved without sacrificing accuracy, and the method remains robust across different geometries and bond lengths, indicating its broad applicability. Furthermore, by incorporating double-factorized Hamiltonians, we achieve additional compression in measurement overhead, reinforcing the algorithm’s utility for strongly correlated systems. These findings suggest that sQITE, especially when paired with Hamiltonian factorization techniques, can serve as a practical and scalable alternative to fixed ansatz approaches in near-term quantum computing environments. The work opens a promising direction for algorithmic efficiency in quantum chemistry, particularly under resource constraints relevant to noisy intermediate-scale quantum (NISQ) devices.
 
 
 
@@ -258,8 +276,7 @@ In this second-quantized representation, the operators $\hat{\rho}_\mu$ are then
 %\ket{\Phi_\mu} = \hat{\kappa}_\mu \ket{\Phi_0} = \ket{\Phi_{ij\cdots}^{ab\cdots}}.
 %$$
 %Here, $\ket{\Phi_{ij\cdots}^{ab\cdots}}$ represents the excited determinant resulting from the action of $\hat{\kappa}_\mu$ on the reference state $\ket{\Phi_0}$.
-
-\textcolor{blue}{NOTE: Need to verify if in Tsuchimochi's derivation there simply is no first order error, or if its simply independent of $\alpha$}
+\note{blue}{NOTE: Need to verify if in Tsuchimochi's derivation there simply is no first order error, or if its simply independent of $\alpha$}
 
 As mentioned in the introduction, Tsuchimochi~\textit{et. al.}~\cite{tsuchimochi2023improved} have recently shown that the QITE error function for a vector of expansion coefficients $\boldsymbol{\alpha}$ and a time step $\Delta \beta$ is given to second order in $\Delta \beta$ by
 \begin{equation}
@@ -305,10 +322,10 @@ Once the solution vector $\boldsymbol{\alpha}$ is found by solving Eq.~\eqref{eq
 = e^{-i\Delta \beta \hat{A}} + \mathcal{O}(\Delta \beta)
 \end{equation}
 The linear system can then be solved for $n$ iterations until a desired total amount of evolution time $\beta = n \Delta \beta$ is achieved.
-\textcolor{blue}{NOTE: should comment on the order of $\Delta \beta$ error for Trotterization vs from the QITE equations.}
+\note{blue}{NOTE: should comment on the order of $\Delta \beta$ error for Trotterization vs from the QITE equations.}
 
 \subsection{Folded-Spectrum QITE for Excited States}
-\textcolor{red}{Maybe do this section after adaptive QITE, and write it from that perspection (FS-AQITE)}
+\note{red}{Maybe do this section after adaptive QITE, and write it from that perspection (FS-AQITE)}
 A straightforward strategy to target higher-lying eigenstates in QITE is to employ the \textit{folded-spectrum} approach, which has been explored in both classical imaginary time evolution and quantum algorithms.\cite{foldedSpectrumRefs} Rather than evolving under $\hat{H}$, one defines a shifted operator
 \begin{equation}
 \hat{H}_\omega \;=\; (\hat{H} - \omega \hat{I})^2,
@@ -331,7 +348,7 @@ provided that $\braket{\Psi_n|\Phi_0}\neq 0$. Thus, FS-QITE effectively “folds
 \subsection{Quantum Lanczos for Excited States}
 \label{sec:qlanczos}
 
-\textcolor{red}{Maybe do this section after adaptive QITE, and write it from that perspection (AQLanczos + FS-AQLanczos)}
+\note{red}{Maybe do this section after adaptive QITE, and write it from that perspection (AQLanczos + FS-AQLanczos)}
 Although the primary objective of QITE is to approximate the ground state, the intermediate wave functions generated at each step can be used to form a Krylov subspace for excited-state calculations. In the \textit{Quantum Lanczos} (QLanczos) method,\cite{motta2019determining} one exploits these QITE-produced states rather than the exact imaginary time propagations. Specifically, define the sequence
 \begin{equation}
 \ket{\Phi_k} 
@@ -418,8 +435,8 @@ A key feature of this work is to introduce a selection strategy for constructing
 \begin{equation}
 r_\mu = \bra{\Phi_\mu} \hat{U}_n^\dagger f(\hat{H}) \hat{U}_n \ket{\Phi_0}
 \end{equation}
-must vanish for all determinants $\ket{\Phi_\mu}$ once $\ket{\Psi_n}$ is reached. Here $f(\hat{H})$ is any function of the Hamiltonian sharing the same eigenvectors, and $\ket{\Phi_\mu}$ is the determinant obtained by applying the second-quantized operator $\hat{\rho}_\mu$ to $\ket{\Phi_0}$. 
-\textcolor{red}{Careful with $k_\mu$ vs $\rho_\mu$ here}
+must vanish for all determinants $\ket{\Phi_\mu}$ once $\ket{\Psi_n}$ is reached. Here $f(\hat{H})$ is any function of the Hamiltonian sharing the same eigenvectors, and $\ket{\Phi_\mu}$ is the determinant obtained by applying the second-quantized operator $\hat{\rho}_\mu$ to $\ket{\Phi_0}$.
+\note{red}{Careful with $k_\mu$ vs $\rho_\mu$ here}
 In magnitude, $|r_\mu|$ indicates how much the determinant $\ket{\Phi_\mu}$ is under- or overrepresented in the current approximation to $\ket{\Psi_n}$. 
 Thus, including $\hat{\rho}_\mu$ in the QITE unitary is sensible because it directly addresses the residual mismatch, enabling a more accurate approach to the target eigenstate.
 
@@ -440,8 +457,8 @@ for the same set of candidate operators $\mathcal{P}_{\rm{sq}}$. In other words,
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.45\textwidth]{residual_vs_parameter_distribution.pdf}
-\caption{Comparison of the accumulated residual magnitudes $R_\mu$ versus the accumulated QITE parameter magnitudes $X_\mu$ for all second-quantized operators in $\mathcal{P}_{\rm{sq}}^{\rm{all}}$. The strong correlation between these two distributions indicates that residual-based selection effectively identifies the same dominant operators as those that ultimately acquire large QITE amplitudes.}
+\includegraphics[width=0.45\textwidth]{sqite_paper/full_pool_plot.png}
+\caption{Comparison of the accumulated residual magnitudes $R_\mu$ versus the accumulated QITE parameter magnitudes $\Omega_\mu$ for all second-quantized operators in $\mathcal{P}_{\rm{sq}}^{\rm{all}}$ for the H6 chain system. The strong correlation between these two distributions indicates that residual-based selection effectively identifies the same dominant operators as those that ultimately acquire large QITE amplitudes.}
 \label{fig:residual_param_comparison}
 \end{figure}
 
@@ -516,11 +533,12 @@ b_{\mu}^{(k)}
 where $\ket{\Phi^{(k)}} \equiv \hat{U}(\Delta \beta)^{(k-1)} \cdots \hat{U}(\Delta \beta)^{(1)} \ket{\Phi_0}$ denotes the current wave function (i.e., the state at the start of the $k$th iteration). The total number of unique \textit{pairwise} products $\hat{\rho}_\mu^{(k)}\hat{\rho}_\nu^{(k)}$ may be on the order of $(M^{(k)})^2$ per iteration, and one must also measure various commutators $\bigl[\hat{H},\hat{\rho}_\mu^{(k)}\bigr]$. Hence, summing over all $k$, the number of distinct observables can become quite large for big pools. 
 
 While straightforward measurement protocols (e.g., measuring each observable individually) could be prohibitively expensive, more advanced methods such as \textit{classical shadows}\cite{huang2020predicting} can compress the measurement overhead. In essence, classical shadows allow one to efficiently estimate many Pauli expectation values simultaneously using randomized measurements and classical post-processing, reducing the exponential blowup in the number of measurement settings.
-\textcolor{red}{Emphasize that reguardless, one wants to minimize the total number of Pauli operators that need to be measured}
+\note{red}{Emphasize that reguardless, one wants to minimize the total number of Pauli operators that need to be measured}
+
 
 \paragraph{Circuit Depth and Gate Counts.}
 From a quantum-circuit perspective, each exponential $e^{-\,i\,\Delta \beta\,\alpha_\mu^{(k)} \,\hat{\rho}_\mu^{(k)}}$ is typically decomposed into a small network of multi-qubit gates (e.g., CNOTs) and parameterized single-qubit rotations. If $\hat{\rho}_\mu^{(k)}$ preserves fundamental symmetries (particle number, spin projection, etc.) and is built from low-rank fermionic excitations (e.g., up to doubles), the Trotter block for $e^{-\,i\,\Delta \beta\,\alpha_\mu^{(k)} \,\hat{\rho}_\mu^{(k)}}$ can often be implemented with a bounded number of CNOTs that scales polynomially in the system size. 
-\textcolor{red}{Careful, not true if higher order excitations are included}
+\note{red}{Careful, not true if higher order excitations are included}
 
 In the \textit{deepest} QITE circuit (where the largest operator pool is applied), we may have 
 \[
@@ -585,15 +603,32 @@ In summary, the resource requirements of QITE scale with (i) the total number of
 %We then add all unique Pauli operators ($\hat{\rho}_\mu$) found in this way to the set $\mathcal{P}$.
 %$\mathcal{P}$ is then farther truncated to include only Pauli operators that contain an odd number of $\hat{\sigma}_Y$'s because (for real wave functions) Eq.~\eqref{eq:qite2} can only be satisfied when $\Im \big( \bra{\Phi} \hat{\rho}_\mu^\dagger \hat{H} \ket{\Phi} \big)$ and $\Re \big( \bra{\Phi} \hat{\rho}_\mu^\dagger  \hat{\rho}_\nu \ket{\Phi} \big)$ are non-zero.
 
-\textcolor{blue}{NOTE: Think about selection for excited states as well.}
+\note{blue}{NOTE: Think about selection for excited states as well.}
 
 %\subsection{QITE with Low Rank Hamiltonians}
 %Another way to exploit sparsity in the evolution is by considering low rank factorization of...
 
 \section{Computational Details}
-The ground-state singlet energies and molecular integrals of the H10 model systems were calculated using FCI with self consistent field (SCF) orbitals obtained with the open-source quantum chemistry package Psi4 \cite{Parrish2017Psi4, smith2020psi4} in a STO-6G basis set. For the two ene systems (8-ene, 12-ene), The ground-state singlet energies and molecular integrals were calculated using FCI within an active space based on the Carbon atom 2pz orbitals with complete active space self-consistent field (CASSCF) from a cc-pvdz basis set using the open-source quantum chemistry package PySCF \cite{sun2018pyscf}. All ground state computations were performed in C1 symmetry. The ranges of threshold parameters used for sQITE are given in the Supplementary Material.
+The ground-state singlet energies and molecular integrals of the H10 model systems were calculated using FCI with self consistent field (SCF) orbitals obtained with the open-source quantum chemistry package Psi4 \cite{Parrish2017Psi4, smith2020psi4} in a STO-6G basis set. For the two ene systems (8-ene, 12-ene), The ground-state singlet energies and molecular integrals were calculated using FCI within an active space based on the Carbon atom 2pz orbitals with complete active space self-consistent field (CASSCF) from a cc-pvdz basis set using the open-source quantum chemistry package PySCF \cite{sun2018pyscf}. All ground state computations were performed in C1 symmetry. The ranges of threshold parameters used for sQITE are given in the Supplementary Material. Ten-no et al previously reported that a second-order derivation of the QITE equations avoids first-order dependence on time step, $\Delta\beta$, even at large time step of $\Delta\beta$ = 0.1 \cite{Tsuchimochi2023Improved}. Currently, we have found that convergence can be reached at time steps as large as $\Delta\beta$ = 0.5, allowing for a significant reduction in resource usage for a second order derivation of QITE. 
 
-write about how double factorization employs d2H symmetry here
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.45\textwidth]{sqite_paper/paper_db_plot.png}
+\caption{dUCCSD energy convergence for the H8 chain system at 1.0 Å bond distance at different time steps $\Delta\beta$ = 0.5, 0.1, 0.05. We find no discernable difference between the final energy error of QITE runs with different timesteps in a singles and doubles UCCSD Ansatz propagated from the same Hartree-Fock initial state.}
+\label{fig:db_plot_1.0A}
+\end{figure}
+
+Further resource reduction can be accomplished through our double-factorization scheme discussed in the results section, and through usage of an energy threshold of 1.0e-5 mHartree, we found an order of magnitude reduction in cumulative cnot gate depths. All H10 systems were run with the same double-factorized threshold.
+
+\note{blue}{write about how double factorization employs d2H symmetry here}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.45\textwidth]{sqite_paper/paper_df_ham_plot.png}
+\caption{dUCCSD energy convergence for 8-ene chains in a cc-pVDZ basis using AVAS among 2pz orbitals of carbon. We demonstrate that a reduction in quantum circuit depths through double-factorization of the residual state does not result in loss of accuracy for the final QITE energy. runs of dfQITE (dotted lines) are plotted against QITE in a singles and doubles UCC Ansatz, and sQITE with 5 different cumulative thresholds ($1.0 \times 10^{-5}$, $1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}\ E_h$) for relative operator magnitudes. Plot compares convergence with respect to the number of CNOT gates ($N_\mathrm{CNOT}$).}
+\label{fig:db_plot_1.0A}
+\end{figure}
+
 % Canonical (delocalized) orbitals were computed usingrestricted Hartree–Fock (RHF). Localized orbitals were obtained by first performing a restricted open-shell Hartree-Fock (ROHF) computation using maximum multiplicity (e.g., S = 5for H10) and then localizing the orbitals with the Pipek–Mezey(PM)133 procedure (allowing rotations among all orbitals).
 
 % Computations based on canonical RHF orbitals were run in D2h symmetry for the H10 chain, ring, and sheet and in C2v symmetry for the H10 pyramid. The H12, H14, and H16 analogs of the four systems were run with the same symmetry as their H10 counterparts with the exception of the H14 pyramid, which used D2h symmetry. All computations using localized orbitals were performed in C1 symmetry. The ranges of threshold parameters used for each method are given in the Supplementary Material.
@@ -610,20 +645,20 @@ To evaluate the efficiency of the selected Quantum Imaginary Time Evolution (sQI
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.45\textwidth]{sqite_paper/Chain 1.0 A.png}
-\includegraphics[width=0.45\textwidth]{sqite_paper/Ring 1.0 A.png}
+% \includegraphics[width=0.45\textwidth]{sqite_paper/Ring 1.0 A.png}
 \includegraphics[width=0.45\textwidth]{sqite_paper/Sheet 1.0 A.png}
-\caption{dUCCSD energy convergence for H10 systems (chain, ring, sheet) at 1.0 Å bond distance. We show the absolute value of the energy change between subsequent iterations for QITE in a singles and doubles UCC Ansatz, a singles doubles ad triples UCC Ansatz, and selected QITE with 4 different cumulative thresholds ($1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}$ $E_h$) for relative operator magnitudes. All plots compare convergence with respect to the number of Pauli measurements ($N_\mathrm{meas}$), number of CNOT gates ($N_\mathrm{CNOT}$), number of classical parameter ($N_\mathrm{par}$), and evolution amount ($\beta (a. u.)$).}
+\caption{dUCCSD energy convergence for H10 systems (chain, sheet) at 1.0 Å bond distance. We show the absolute value of the energy change between subsequent iterations for QITE in a singles and doubles UCC Ansatz, a singles doubles ad triples UCC Ansatz, and selected QITE with 4 different cumulative thresholds ($1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}$ $E_h$) for relative operator magnitudes. All plots compare convergence with respect to the number of Pauli measurements ($N_\mathrm{meas}$), number of CNOT gates ($N_\mathrm{CNOT}$), number of classical parameter ($N_\mathrm{par}$), and evolution amount ($\beta (a. u.)$).}
 \label{fig:ene_plot_1.0A}
 \end{figure}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.45\textwidth]{sqite_paper/Chain 1.5 A.png}
-\includegraphics[width=0.45\textwidth]{sqite_paper/Ring 1.5 A.png}
-\includegraphics[width=0.45\textwidth]{sqite_paper/Sheet 1.5 A.png}
-\caption{dUCCSD energy convergence for H10 systems (chain, ring, sheet) at 1.5 Å bond distance. We show the absolute value of the energy change between subsequent iterations for QITE in a singles and doubles UCC Ansatz, a singles doubles ad triples UCC Ansatz, and selected QITE with 4 different cumulative thresholds ($1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}$ $E_h$) for relative operator magnitudes. All plots compare convergence with respect to the number of Pauli measurements ($N_\mathrm{meas}$), number of CNOT gates ($N_\mathrm{CNOT}$), number of classical parameter ($N_\mathrm{par}$), and evolution amount ($\beta (a. u.)$).}
-\label{fig:ene_plot_1.5A}
-\end{figure}
+% \begin{figure}[h!]
+% \centering
+% \includegraphics[width=0.45\textwidth]{sqite_paper/Chain 1.5 A.png}
+% \includegraphics[width=0.45\textwidth]{sqite_paper/Ring 1.5 A.png}
+% \includegraphics[width=0.45\textwidth]{sqite_paper/Sheet 1.5 A.png}
+% \caption{dUCCSD energy convergence for H10 systems (chain, ring, sheet) at 1.5 Å bond distance. We show the absolute value of the energy change between subsequent iterations for QITE in a singles and doubles UCC Ansatz, a singles doubles ad triples UCC Ansatz, and selected QITE with 4 different cumulative thresholds ($1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}$ $E_h$) for relative operator magnitudes. All plots compare convergence with respect to the number of Pauli measurements ($N_\mathrm{meas}$), number of CNOT gates ($N_\mathrm{CNOT}$), number of classical parameter ($N_\mathrm{par}$), and evolution amount ($\beta (a. u.)$).}
+% \label{fig:ene_plot_1.5A}
+% \end{figure}
 
 % \begin{figure}[h!]
 % \centering
