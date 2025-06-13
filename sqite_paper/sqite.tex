@@ -91,7 +91,7 @@
 
 % Toggle
 \newboolean{shownotes}
-\setboolean{shownotes}{false} % Change to false to hide notes
+\setboolean{shownotes}{true} % Change to false to hide notes
 
 % Define a command for color-coded notes
 \newcommand{\note}[2]{%
@@ -163,7 +163,7 @@ Significant progress in developing quantum-classical hybrid methods for ground- 
 Variational (VQE)\cite{Peruzzo:2014kca, yung2014transistor, McClean:2016bs, grimsley2019adaptive} and projective (PQE)\cite{stair2021simulating} quantum eigensolver approaches, which optimize the parameters of an ansatz circuit on classical hardware, have shown promise on today's noisy devices,\cite{OMalley:2016dc, colless2018computation, shen2017quantum, hempel2018quantum, nam2020ground} but face complications associated with high-dimensional, nonlinear optimizations that can easily become trapped in local minima. 
 By contrast, imaginary time evolution (ITE) has a long history in classical simulations of correlated fermionic systems,\cite{feynman1948space,ceperley1980ground,sugiyama1986auxiliary,zhang1997constrained,foulkes2001quantum} and its quantum analogue (QITE) has been introduced\cite{motta2019determining} to obviate many of the classical optimization challenges. 
 %Recent developments have demonstrated the efficacy of QITE,\cite{17-24} and combined with quantum Lanczos diagonalization (QLanczos)\cite{19,33} or the folded spectrum method, QITE has emerged as a promising algorithmic framework for extracting not only ground states but also excited states on near-term and early fault-tolerant quantum devices.
-Recent advances in QITE have focused on reducing resource demands and accelerating convergence for both ground and excited state preparation, via QITE's Lanczos and/or Folded Spectrum (FS) formulations.
+Recent advances in QITE have focused on reducing resource demands and accelerating convergence for both ground and excited state preparation, via QITE's Lanczos~\cite{motta2019determining} and/or Folded Spectrum (FS) formulations.\cite{Tsuchimochi2023Improved,McClean:2016bs,santagati2018witnessing,zhang2021adaptive}
 A stochastic variational QITE approach significantly reduces measurement overhead on large-scale devices,\cite{gacon2023stochastic} while step-merging techniques have been successfully applied to combinatorial optimization problems such as MaxCut.\cite{gomes2020efficient,alam2023solving}
 Composite formulations that extend qDRIFT-based methods into the imaginary-time regime offer rigorous error bounds and improved circuit efficiency.\cite{pocrnic2024composite, hagan2023composite} 
 QITE has also been applied to diverse domains, including nuclear density functional theory\cite{li2024quantum} and molecular systems. Recently, Tsuchimochi~\textit{et. al.}~\cite{Tsuchimochi2023Improved} improved the derivation of the QITE equations in second quantization to enable larger time steps and reduced circuit depth.
@@ -175,11 +175,11 @@ With only the notable exception of Gomes~\textit{et. al.},~\cite{gomes2021adapti
 The dimension of $\mathcal{A}$ directly dictates both the quantum and classical costs, and practical simulations often restrict the operator pool to include only one- and two-body excitations. 
 Such a static pool can be suboptimal in strongly correlated systems, where higher-than-two-body excitations may be required to accurately reproduce the evolving state. 
 Furthermore, as the system is propagated toward the ground (or an excited) eigenstate, the QITE solution vector $\mathbf{x}$ naturally becomes sparser in the later stages of imaginary time. 
-In principle, fewer operators would then be needed to describe the update, suggesting that a dynamic pool selection scheme could yield substantial savings in both accuracy and computational resources. 
-Introducing a selection protocol at each time step is therefore a very sensible extension to QITE in order to accurately capture strong correlation early in the imaginary time evolution and to exploit the sparsity that emerges later in the process. Adaptive variational QITE (AVQITE)\cite{gomes2021adaptive} implements a selection protocol which simulates the deviation between variational and exact state propagations through the calculation of McLachlan distances. However, even in this case operator selection is restricted to a fixed subset of all possible Pauli operator products, which limits fidelity to the exact evolution path in cases of strong electron correlation. 
+In principle, fewer operators would then be needed to describe the update, suggesting that a dynamic pool selection scheme could yield substantial savings in computational resources, without a drastic loss in accuracy. Introducing a selection protocol at each time step is therefore a very sensible extension to QITE in order to accurately capture strong correlation early in the imaginary time evolution and to exploit the sparsity that emerges later in the process---as long as the measurement overhead for this selection process scales favorably. 
 
-Here, we present an improved QITE algorithm that \textit{iteratively selects} the most significant excitation and de-excitation operators from the full operator pool at each time step. 
-Our approach identifies important contributions to the anti-Hermitian generator in an efficient manner, by exploiting the natural connection between a set of residual conditions derived from orthonormal many-body basis functions and all excitation/de-excitation operator magnitudes in the full pool throughout the evolution path. Our method extends the operator selection scheme introduced in PQE,\cite{stair2021simulating} in which a quantum state is sampled whose probability amplitudes encode the importance of all operators, however we crucially avoid the need to solve a nonlinear system to determine the parameter vector $\mathbf{x}$. Instead, operating within the QITE framework allows us to determine $\mathbf{x}$ by solving a linear system at each step. This not only simplifies the update procedure but also substantially reduces the quantum resource requirements compared to the full parameter update employed in conventional approaches to QITE.
+Adaptive variational QITE (AVQITE)\cite{gomes2021adaptive} implements a selection protocol which simulates the deviation between variational and exact state propagations through the calculation of McLachlan distances. However, even in this case operator selection is restricted to a fixed subset of all possible Pauli operator products, which limits fidelity to the exact evolution path in cases of strong electron correlation. Furthermore, the adaptive scheme incurs measurement costs for each additional excitation operator evaluated, so it is not clear whether this method will outperform a fixed-pool ansatz in terms of energy error per measurement, given that sufficiently many n-body excitation operators are included. 
+
+Here, we present an improved QITE algorithm with a selection scheme that iteratively selects the most significant excitation/de-excitation operators from among all possible excitations at each time step, without incurring measurement cost on a per-operator basis. Our approach identifies important contributions to the anti-Hermitian generator in an efficient manner, by exploiting the natural connection between a set of residual conditions derived from orthonormal many-body basis functions and all operator magnitudes (up to n-body) throughout the evolution path. Our method extends the operator selection scheme introduced in PQE,\cite{stair2021simulating} in which a \textit{single quantum state} is sampled whose probability amplitudes encode the importance of all operators---not just a subset---while crucially avoiding the need to solve a nonlinear system to determine the parameter vector $\mathbf{x}$. Instead, operating within the QITE framework allows us to determine $\mathbf{x}$ by solving a linear system at each step. This not only simplifies the update procedure but also substantially reduces the quantum resource requirements compared to the full parameter update employed in conventional approaches to QITE.
 \note{blue}{Improve the above, discuss general idea of selectoin based on satisfaction of the residual condition (similar to PQE)}
 Notably, by adaptively growing the operator pool, the method balances the requirement to capture high-order effects in the early imaginary time regime and the opportunity to eliminate negligible operators once the system is close to an eigenstate. 
 This dynamical selection of operators is especially pertinent for challenging excited states where multireference effects come into play and for near-degenerate situations in which physically relevant interactions of higher order can become indispensable. 
@@ -196,9 +196,9 @@ This dynamical selection of operators is especially pertinent for challenging ex
 
 In this work, we demonstrate that our selected Quantum Imaginary Time Evolution (sQITE) algorithm provides a substantial improvement in resource efficiency for quantum simulations of electronic structure. The central question addressed is whether a dynamically chosen operator pool, guided by a magnitude-based threshold, can outperform traditional fixed-pool ansätze and gradient-based adaptive ansätze in practical quantum computing contexts. This is important because the high cost of quantum resources—particularly Pauli measurements and entangling gate operations—poses a major bottleneck to the scalability of quantum algorithms such as VQE, PQE, ect. Our approach is novel in that it integrates operator selection into the imaginary time evolution process, enabling convergence toward chemically accurate ground states with minimal resource expenditure.
 
-We find that sQITE significantly reduces both the number of Pauli measurements and CNOT gates required to reach chemical accuracy across a range of molecular systems, from simple hydrogen systems (chains, rings, and sheets) to larger conjugated 8 and 12 atom hydrocarbon systems. These reductions are achieved without sacrificing accuracy, and the method remains robust across different geometries and bond lengths, indicating its broad applicability. Furthermore, by utilizing a double-factorization scheme in constructing the quantum state sampled for selection, we achieve additional compression in measurement overhead, reinforcing the algorithm’s utility for strongly correlated systems. These findings suggest that sQITE can serve as a practical and scalable alternative to fixed ansatz approaches in near-term quantum computing environments. The work opens a promising direction for algorithmic efficiency in quantum chemistry, particularly under resource constraints relevant to noisy intermediate-scale quantum (NISQ) devices.
+We find that sQITE significantly reduces both the number of Pauli measurements and CNOT gates while achieving arbitrary accuracy in energy across a range of molecular systems, from simple hydrogen systems (chains, rings, and sheets) to larger conjugated 8 and 12 atom hydrocarbon systems. These reductions are achieved without sacrificing accuracy, and the method remains robust across different geometries and bond lengths, indicating its broad applicability. Furthermore, by utilizing a double-factorization scheme in constructing the quantum state sampled for selection, we achieve additional compression in measurement overhead, reinforcing the algorithm’s utility for strongly correlated systems. These findings suggest that sQITE can serve as a practical and scalable alternative to both fixed ansatz methods and adaptive methods which are constrained to a lower energy bound. The work opens a promising direction for algorithmic efficiency in quantum chemistry, particularly under resource constraints relevant to noisy intermediate-scale quantum (NISQ) devices.
 
-
+\note{red}{as of right now, the only included data that employs double factorization is the comparison for different timesteps for the 8-ene system}
 
 % =====> END INTRO <======
 
@@ -329,7 +329,7 @@ Here, the second order derivation of the QITE equations ensures no first-order e
 
 \subsection{Folded-Spectrum QITE for Excited States}
 \note{red}{Maybe do this section after adaptive QITE, and write it from that perspection (FS-AQITE)}
-A straightforward strategy to target higher-lying eigenstates in QITE is to employ the \textit{folded-spectrum} approach, which has been explored in both classical imaginary time evolution and quantum algorithms.\cite{Tsuchimochi2023Improved,McClean:2016bs,santagati2018witnessing,zhang2021adaptive} Rather than evolving under $\hat{H}$, one defines a shifted operator
+A straightforward strategy to target higher-lying eigenstates in QITE is to employ the \textit{folded-spectrum} approach, which has been explored in both classical imaginary time evolution and quantum algorithms.\cite{Tsuchimochi2023Improved} Rather than evolving under $\hat{H}$, one defines a shifted operator
 \begin{equation}
 \hat{H}_\omega \;=\; (\hat{H} - \omega \hat{I})^2,
 \end{equation}
@@ -465,11 +465,11 @@ for the same set of candidate operators $\mathcal{P}_{\rm{sq}}$. In other words,
 \label{fig:residual_param_comparison}
 \end{figure}
 
-Because we are also interested in low-lying excited states, we partition the overall transformation into two parts, 
-\[
-\hat{U}_n = \hat{U}_n^{\mathrm{QITE}} \, \hat{U}_n^{\mathrm{CIS}},
-\]
-where the first circuit $\hat{U}_n^{\mathrm{CIS}}$ transforms $\ket{\Phi_0}$ into the $n$th configuration-interaction singles (CIS) state \cite{}, providing a reasonable zeroth-order approximation to $\ket{\Psi_n}$. The second part, $\hat{U}_n^{\mathrm{QITE}}$, is then adaptively constructed via the QITE procedure described in Section~\ref{sec:aqite_alg_overview}, using the residual-based selection criterion to systematically introduce the most relevant higher-order excitations and de-excitations.
+% Because we are also interested in low-lying excited states, we partition the overall transformation into two parts, 
+% \[
+% \hat{U}_n = \hat{U}_n^{\mathrm{QITE}} \, \hat{U}_n^{\mathrm{CIS}},
+% \]
+% where the first circuit $\hat{U}_n^{\mathrm{CIS}}$ transforms $\ket{\Phi_0}$ into the $n$th configuration-interaction singles (CIS) state \cite{}, providing a reasonable zeroth-order approximation to $\ket{\Psi_n}$. The second part, $\hat{U}_n^{\mathrm{QITE}}$, is then adaptively constructed via the QITE procedure described in Section~\ref{sec:aqite_alg_overview}, using the residual-based selection criterion to systematically introduce the most relevant higher-order excitations and de-excitations.
 
 
 \subsection{Computational resource requirements in QITE}
@@ -614,7 +614,7 @@ In summary, the resource requirements of QITE scale with (i) the total number of
 %Another way to exploit sparsity in the evolution is by considering low rank factorization of...
 
 \section{Computational Details}
-The ground-state singlet energies and molecular integrals of the H10 model systems were calculated using FCI with self consistent field (SCF) orbitals obtained with the open-source quantum chemistry package Psi4 \cite{Parrish2017Psi4, smith2020psi4} in a STO-6G basis set. For the two ene systems (8-ene, 12-ene), The ground-state singlet energies and molecular integrals were calculated using FCI within an active space based on the Carbon atom 2pz orbitals with complete active space self-consistent field (CASSCF) from a cc-pvdz basis set using the open-source quantum chemistry package PySCF \cite{sun2018pyscf}. All ground state computations were performed in C1 symmetry. The ranges of threshold parameters used for sQITE are given in the Supplementary Material. Tsuchimochi et al previously reported that a second-order derivation of the QITE equations avoids first-order dependence on time step, $\Delta\beta$, even at large time step of $\Delta\beta$ = 0.1 \cite{Tsuchimochi2023Improved}. Currently, we have found that convergence can be reached at time steps as large as $\Delta\beta$ = 0.5, allowing for a significant reduction in resource usage for a second order derivation of QITE. 
+The ground-state singlet energies and molecular integrals of the H10 model systems were calculated using FCI with self consistent field (SCF) orbitals obtained with the open-source quantum chemistry package Psi4 \cite{Parrish2017Psi4, smith2020psi4} in a STO-6G basis set. For the two ene systems (8-ene, 12-ene), The ground-state singlet energies and molecular integrals were calculated using FCI within an active space among the Carbon atom 2pz orbitals automatically selected through AVAS~\cite{sayfutyarova2017automated} using the open-source quantum chemistry package PySCF \cite{sun2018pyscf}. All ground state computations were performed in C1 symmetry. \note{red}{To respond to this point: "It says we used C1 symmetry for everything, but you may have used d2h symmetry on some of the hydrogen systems?" I am actually not sure since I didnt specify symmetry when running the psi4 calculations} The ranges of threshold parameters used for sQITE are given in the Supplementary Material. Tsuchimochi et al previously reported that a second-order derivation of the QITE equations avoids first-order dependence on time step, $\Delta\beta$, even at large time step of $\Delta\beta$ = 0.1 \cite{Tsuchimochi2023Improved}. Currently, we have found that convergence can be reached at time steps as large as $\Delta\beta$ = 0.5, allowing for a significant reduction in resource usage for a second order derivation of QITE. 
 
 \begin{figure}[h!]
 \centering
@@ -623,26 +623,17 @@ The ground-state singlet energies and molecular integrals of the H10 model syste
 \label{fig:db_plot_1.0A}
 \end{figure}
 
-Further resource reduction can be accomplished through our double-factorization scheme, and through usage of a range of truncation thresholds, we found up to an order of magnitude reduction in cumulative cnot gate depths. All H10 systems were run with the same double-factorized threshold.
+Further resource reduction can be accomplished through our double-factorization scheme, and through usage of a range of truncation thresholds, we found up to an order of magnitude reduction in cumulative cnot gate depths. All ene systems were run with the same double-factorized threshold.
 
-In this study, we utilized double-factorized Hamiltonians to further reduce measurement overhead associated with the non-unitary imaginary time evolution operator. As illustrated in plot 6, a direct comparison between UCCSD VQE, SPQE, regular sQITE, and double-factorized sQITE was conducted on the 8-ene system. Double factorized sQITE consistently provided the most cost-efficient solution among the compared methods, achieving chemical accuracy with fewer quantum resources {plot6}.
+In this study, we utilized double-factorized Hamiltonians to reduce circuit depths associated with residual overhead from the selection procedure. To generate these Hamiltonians for time evolution, we employed helper functions from the OpenFermion\cite{mcclean2020openfermion} library as well as the fermionic-quantum-emulator.\cite{rubin2021fermionic} Although the implementation resides within the QForte framework, the underlying code for double factorization and related transformations was directly adapted from these two libraries. Computations were performed in a development version of the open-source quantum simulation and chemistry library QForte \cite{stair2021qforte}. 
 
-A comprehensive analysis comparing regular sQITE and double-factorized sQITE across various operator inclusion thresholds is summarized in plot 7. This plot clearly indicates that double factorization significantly reduces resource requirements, achieving cost efficiency with only negligible accuracy losses compared to regular sQITE {plot7}. This enhancement underscores the utility of double factorization for larger and strongly correlated molecular systems.
 
 \note{blue}{write about how double factorization employs d2H symmetry here}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.45\textwidth]{sqite_paper/paper_df_ham_plot.png}
-\caption{dUCCSD energy convergence for 8-ene chains in a cc-pVDZ basis using AVAS among 2pz orbitals of carbon. We demonstrate that a reduction in quantum circuit depths through double-factorization of the residual state does not result in loss of accuracy for the final QITE energy. runs of dfQITE (dotted lines) are plotted against QITE in a singles and doubles UCC Ansatz, and sQITE with 5 different cumulative thresholds ($1.0 \times 10^{-5}$, $1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}\ E_h$) for relative operator magnitudes. Plot compares convergence with respect to the number of CNOT gates ($N_\mathrm{CNOT}$). \textcolor{blue}{change CNOT resource estimation to count cnot full before regenerating data}}
-\label{fig:db_plot_1.0A}
-\end{figure}
 
 % Canonical (delocalized) orbitals were computed usingrestricted Hartree–Fock (RHF). Localized orbitals were obtained by first performing a restricted open-shell Hartree-Fock (ROHF) computation using maximum multiplicity (e.g., S = 5for H10) and then localizing the orbitals with the Pipek–Mezey(PM)133 procedure (allowing rotations among all orbitals).
 
 % Computations based on canonical RHF orbitals were run in D2h symmetry for the H10 chain, ring, and sheet and in C2v symmetry for the H10 pyramid. The H12, H14, and H16 analogs of the four systems were run with the same symmetry as their H10 counterparts with the exception of the H14 pyramid, which used D2h symmetry. All computations using localized orbitals were performed in C1 symmetry. The ranges of threshold parameters used for each method are given in the Supplementary Material.
-
-sQITE, DF-sQITE, SPQE and UCC-VQE computations were performed in a development version of the open-source quantum simulation and chemistry library QForte \cite{stair2021qforte}. 
 
 % All ACI computations included additional determinants to ensure spin completeness of the P and Q spaces. The rank-reduction procedure used for SVD-FCI and the a posteriori determinant screening procedure for ap-sCI were implemented in a development version of Forte. 
 
@@ -651,14 +642,26 @@ sQITE, DF-sQITE, SPQE and UCC-VQE computations were performed in a development v
 \section{Results}
 To evaluate the efficiency of the selected Quantum Imaginary Time Evolution (sQITE) approach relative to standard quantum algorithms, we performed numerical simulations on several molecular systems of increasing complexity, specifically three hydrogen systems (H$_{10}$ chain, ring, and sheet geometries) at bond lengths of 1.0 Å and 1.5 Å, as well as larger conjugated organic systems, 8-ene and 12-ene.
 
-\begin{figure}[h!]
+% \begin{figure}[h!]
+% \centering
+% \includegraphics[width=0.45\textwidth]{sqite_paper/Chain 1.0 A.png}
+% % \includegraphics[width=0.45\textwidth]{sqite_paper/Ring 1.0 A.png}
+% \includegraphics[width=0.45\textwidth]{sqite_paper/Sheet 1.0 A.png}
+% \caption{dUCCSD energy convergence for H10 systems (chain, sheet) at 1.0 Å bond distance. We show the absolute value of the energy change between subsequent iterations for QITE in a singles and doubles UCC Ansatz, a singles doubles ad triples UCC Ansatz, and selected QITE with 4 different cumulative thresholds ($1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}$ $E_h$) for relative operator magnitudes. All plots compare convergence with respect to the number of Pauli measurements ($N_\mathrm{meas}$), number of CNOT gates ($N_\mathrm{CNOT}$), number of classical parameter ($N_\mathrm{par}$), and evolution amount ($\beta (a. u.)$).}
+% \label{fig:ene_plot_1.0A}
+% \end{figure}
+
+\begin{figure*}[htbp]
 \centering
-\includegraphics[width=0.45\textwidth]{sqite_paper/Chain 1.0 A.png}
-% \includegraphics[width=0.45\textwidth]{sqite_paper/Ring 1.0 A.png}
-\includegraphics[width=0.45\textwidth]{sqite_paper/Sheet 1.0 A.png}
+\includegraphics[width=0.48\textwidth]{sqite_paper/Chain 1.0 A.png}
+\includegraphics[width=0.48\textwidth]{sqite_paper/Sheet 1.0 A.png}
+\vspace{1em} % Optional vertical space between rows
+% Uncomment the next lines if you have additional plots
+% \includegraphics[width=0.48\textwidth]{sqite_paper/Ring 1.0 A.png}
+% \includegraphics[width=0.48\textwidth]{sqite_paper/AnotherPlot.png}
 \caption{dUCCSD energy convergence for H10 systems (chain, sheet) at 1.0 Å bond distance. We show the absolute value of the energy change between subsequent iterations for QITE in a singles and doubles UCC Ansatz, a singles doubles ad triples UCC Ansatz, and selected QITE with 4 different cumulative thresholds ($1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}$ $E_h$) for relative operator magnitudes. All plots compare convergence with respect to the number of Pauli measurements ($N_\mathrm{meas}$), number of CNOT gates ($N_\mathrm{CNOT}$), number of classical parameter ($N_\mathrm{par}$), and evolution amount ($\beta (a. u.)$).}
 \label{fig:ene_plot_1.0A}
-\end{figure}
+\end{figure*}
 
 % \begin{figure}[h!]
 % \centering
@@ -690,11 +693,21 @@ We first analyzed the number of Pauli measurements required to achieve chemical 
 
 In addition, we assessed the complexity of quantum circuits by counting CNOT gates required for chemical accuracy, also presented below. Consistent with our findings for Pauli measurements, the sQITE algorithm outperforms the fixed singles and doubles pool in terms of gate complexity at certain thresholds, demonstrating the method's capability to reduce quantum resource requirements substantially.
 
-Finally, we estimated classical resource overhead by tracking the cumulative dimension of the linear system solved each time step by the QITE algorithm. Consistent with our findings for quantum resource costs, the sQITE algorithm outperforms fixed pools and other hybrid quantum/classical algorithms such as SPQE and ADAPT-VQE, due to a combination of reduced scaling in the dynamic pool and the simplicity of the linear system.
+For example, in the H\textsubscript{10} chain at 1.0 \AA{}, sQITE achieved convergence within one order of magnitude to chemical accuracy using up to 100× fewer Pauli measurements and 2× fewer CNOT gates compared to fixed-ansatz QITE, while also requiring fewer classical parameters. Moreover, while fixed-ansatz QITE consistently failed to reach chemical accuracy in strongly correlated regimes (e.g., stretched geometries at 1.5 angstrom), sQITE was able to do so reliably by selectively adapting the operator pool based on a carefully chosen threshold value. This demonstrates both resource efficiency and accuracy improvements enabled by the selection procedure.
+
+% Finally, we estimated classical resource overhead by tracking the cumulative dimension of the linear system solved each time step by the QITE algorithm. Consistent with our findings for quantum resource costs, the sQITE algorithm outperforms fixed pools and other hybrid quantum/classical algorithms such as SPQE and ADAPT-VQE, due to a combination of reduced scaling in the dynamic pool and the simplicity of the linear system.
+
+Furthermore, a direct comparison between regular sQITE, and double-factorized sQITE was conducted on the 8-ene system. Double factorized sQITE consistently provided reduced circuit depths among a range of thresholds, achieving chemical accuracy with fewer quantum resources. The comprehensive analysis is summarized in Figure~\ref{fig:df_plot_ene}. This plot clearly indicates that double factorization significantly reduces resource requirements, achieving cost efficiency with only negligible accuracy losses compared to regular sQITE. This enhancement underscores the utility of double factorization for larger and strongly correlated molecular systems.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.45\textwidth]{sqite_paper/paper_df_ham_plot.png}
+\caption{dUCCSD energy convergence for 8-ene chains in a cc-pVDZ basis using AVAS among 2pz orbitals of carbon. We demonstrate that a reduction in quantum circuit depths through double-factorization of the residual state does not result in loss of accuracy for the final QITE energy. runs of dfQITE (dotted lines) are plotted against QITE in a singles and doubles UCC Ansatz, and sQITE with 5 different cumulative thresholds ($1.0 \times 10^{-5}$, $1.0 \times 10^{-6}$, $1.0 \times 10^{-7}$, $5.0 \times 10^{-8}$, $1.0 \times 10^{-8}\ E_h$) for relative operator magnitudes. Plot compares convergence with respect to the number of CNOT gates ($N_\mathrm{CNOT}$). \textcolor{blue}{change CNOT resource estimation to count cnot full before regenerating data}}
+\label{fig:df_plot_ene}
+\end{figure}
 
 For the same hydrogen systems at an extended bond length of 1.5 Å, we demonstrate a similar trend in the efficiency of the sQITE algorithm. Both the Pauli measurements and CNOT gates required to reach chemical accuracy were significantly lower for selected operator pools compared to fixed operator approaches, reflecting sQITE's consistent performance across different molecular geometries and bond distances.
 
-We extended our analysis to larger molecular systems, specifically the conjugated hydrocarbons 8-ene and 12-ene. Plot 5 demonstrates that sQITE again substantially reduces the number of Pauli measurements, classical parameters, and CNOT gates necessary to reach chemical accuracy compared to fixed pools, confirming its scalability to larger systems {plot5}.
+We extended our analysis to larger molecular systems, specifically the conjugated hydrocarbons 8-ene and 12-ene. Figures \ref{fig:ene_plot_1.0A} and \ref{fig:df_plot_ene} demonstrates that sQITE again substantially reduces the number of Pauli measurements, classical parameters, and CNOT gates necessary to reach chemical accuracy compared to fixed pools, confirming its scalability to larger systems.
 
 % \begin{figure}[h!]
 % \centering
